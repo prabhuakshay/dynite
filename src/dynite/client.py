@@ -5,6 +5,7 @@ the Business Central OData API.
 """
 
 import logging
+from urllib.parse import urlencode
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -93,3 +94,22 @@ class Dynite:
         # Mount adapters with the retry strategy
         self.session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
         self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+
+    def _build_url(self, endpoint: str, params: dict[str, str] | None = None) -> str:
+        """Build the full URL for an API endpoint.
+
+        Args:
+            endpoint (str): The API endpoint.
+            params (dict[str, str] | None): Optional query parameters.
+
+        Returns:
+            str: The full URL for the API endpoint.
+        """
+        endpoint = endpoint.lstrip("/")
+        url = f"{self.base_url}/{endpoint}"
+
+        if params:
+            query_string = urlencode(params)
+            url = f"{url}?{query_string}"
+
+        return url
