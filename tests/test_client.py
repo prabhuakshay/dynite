@@ -32,6 +32,20 @@ class TestClientInitialization:
         # Check Dynite.session exists
         assert hasattr(client_instance, "session")
 
+    def test_client_timeout_attribute(self) -> None:
+        """Test that the timeout attribute is set correctly."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+
+        # Test default timeout
+        client_instance_default = Dynite(base_url=url, auth=auth)
+        assert client_instance_default._timeout == 30
+
+        # Test custom timeout
+        custom_timeout = 60
+        client_instance_custom = Dynite(base_url=url, auth=auth, timeout=custom_timeout)
+        assert client_instance_custom._timeout == custom_timeout
+
     def test_client_url_attribute(self) -> None:
         """Test that the base_url attribute is set correctly."""
         auth = ("user", "pass")
