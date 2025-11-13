@@ -46,6 +46,13 @@ class TestClientInitialization:
         client_instance_custom = Dynite(base_url=url, auth=auth, timeout=custom_timeout)
         assert client_instance_custom._timeout == custom_timeout
 
+        # Test invalid timeout (negative value)
+        invalid_timeout = -10
+        client_instance_invalid = Dynite(
+            base_url=url, auth=auth, timeout=invalid_timeout
+        )
+        assert client_instance_invalid._timeout == 30
+
     def test_client_url_attribute(self) -> None:
         """Test that the base_url attribute is set correctly."""
         auth = ("user", "pass")

@@ -28,7 +28,7 @@ class Dynite:
         self.base_url = self._validate_url(base_url)
         self.session = requests.Session()
         self.session.auth = auth
-        self._timeout = timeout
+        self._timeout = self._validate_timeout(timeout)
 
     def _validate_url(self, url: str) -> str:
         """Validate the base URL.
@@ -44,3 +44,21 @@ class Dynite:
             logger.exception(msg)
             raise InvalidURLError(msg)
         return url.rstrip("/")
+
+    def _validate_timeout(self, timeout: int) -> int:
+        """Validate the timeout value.
+
+        Args:
+            timeout (int): The timeout value to validate.
+
+        Returns:
+            int: The validated timeout value.
+        """
+        if timeout <= 0:
+            msg = (
+                f"Invalid timeout value: {timeout}. "
+                f"Using default timeout of 30 seconds."
+            )
+            logger.warning(msg)
+            return 30
+        return timeout
