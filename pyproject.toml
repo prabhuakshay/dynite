@@ -11,9 +11,6 @@ dependencies = [
     "requests>=2.32.5",
 ]
 
-[project.scripts]
-dynite = "dynite:main"
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
