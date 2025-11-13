@@ -6,6 +6,8 @@ the Business Central OData API.
 
 import logging
 
+import requests
+
 from .exceptions import InvalidURLError
 
 logger = logging.getLogger(__name__)
@@ -14,13 +16,16 @@ logger = logging.getLogger(__name__)
 class Dynite:
     """Dynite client for Business Central OData API."""
 
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, auth: tuple[str, str]) -> None:
         """Initialize the Dynite client.
 
         Args:
             base_url (str): The base URL for the Business Central OData API.
+            auth (tuple[str, str]): The authentication credentials (username, password).
         """
         self.base_url = self._validate_url(base_url)
+        self.session = requests.Session()
+        self.session.auth = auth
 
     def _validate_url(self, url: str) -> str:
         """Validate the base URL.
