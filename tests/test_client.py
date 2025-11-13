@@ -1,6 +1,7 @@
 """Tests for the Client class in dynite.client module."""
 
 import pytest
+from requests.adapters import HTTPAdapter
 
 from dynite.client import Dynite
 from dynite.exceptions import InvalidURLError
@@ -31,6 +32,29 @@ class TestClientInitialization:
         assert hasattr(client_instance, "base_url")
         # Check Dynite.session exists
         assert hasattr(client_instance, "session")
+        # Check that session.auth is set correctly
+        assert client_instance.session.auth == auth
+        # Check that timeout attribute exists
+        assert hasattr(client_instance, "_timeout")
+        # Check that the adapters are mounted
+        assert isinstance(client_instance.session.get_adapter("http://"), HTTPAdapter)
+        assert isinstance(client_instance.session.get_adapter("https://"), HTTPAdapter)
+
+    def test_client_url_attribute(self) -> None:
+        """Test that the base_url attribute is set correctly."""
+        auth = ("user", "pass")
+
+        url_with_slash = "https://example.com/odata/"
+        client_instance_with_slash = Dynite(base_url=url_with_slash, auth=auth)
+        assert client_instance_with_slash.base_url == "https://example.com/odata"
+
+        url_without_slash = "https://example.com/odata"
+        client_instance_no_slash = Dynite(base_url=url_without_slash, auth=auth)
+        assert client_instance_no_slash.base_url == "https://example.com/odata"
+
+        invalid_url = "ftp://example.com/odata/"
+        with pytest.raises(InvalidURLError):
+            _ = Dynite(base_url=invalid_url, auth=auth)
 
     def test_client_timeout_attribute(self) -> None:
         """Test that the timeout attribute is set correctly."""
@@ -53,18 +77,29 @@ class TestClientInitialization:
         )
         assert client_instance_invalid._timeout == 30
 
-    def test_client_url_attribute(self) -> None:
-        """Test that the base_url attribute is set correctly."""
+    def test_client_retries_attribute(self) -> None:
+        """Test that the retries attribute is set correctly."""
+        url = "https://example.com/odata/"
         auth = ("user", "pass")
 
-        url_with_slah = "https://example.com/odata/"
-        client_instance_with_slah = Dynite(base_url=url_with_slah, auth=auth)
-        assert client_instance_with_slah.base_url == "https://example.com/odata"
+        # Test default retries
+        client_instance_default = Dynite(base_url=url, auth=auth)
+        adapter = client_instance_default.session.get_adapter("http://")
+        assert isinstance(adapter, HTTPAdapter)
+        assert adapter.max_retries.total == 3
 
-        url_without_slah = "https://example.com/odata"
-        client_instance_no_slash = Dynite(base_url=url_without_slah, auth=auth)
-        assert client_instance_no_slash.base_url == "https://example.com/odata"
+        # Test custom retries
+        custom_retries = 5
+        client_instance_custom = Dynite(base_url=url, auth=auth, retries=custom_retries)
+        adapter = client_instance_custom.session.get_adapter("http://")
+        assert isinstance(adapter, HTTPAdapter)
+        assert adapter.max_retries.total == custom_retries
 
-        invalid_url = "ftp://example.com/odata/"
-        with pytest.raises(InvalidURLError):
-            _ = Dynite(base_url=invalid_url, auth=auth)
+        # Test invalid retries (negative value)
+        invalid_retries = -2
+        client_instance_invalid = Dynite(
+            base_url=url, auth=auth, retries=invalid_retries
+        )
+        adapter = client_instance_invalid.session.get_adapter("http://")
+        assert isinstance(adapter, HTTPAdapter)
+        assert adapter.max_retries.total == 3

@@ -7,6 +7,8 @@ the Business Central OData API.
 import logging
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 from .exceptions import InvalidURLError
 
@@ -16,7 +18,9 @@ logger = logging.getLogger(__name__)
 class Dynite:
     """Dynite client for Business Central OData API."""
 
-    def __init__(self, base_url: str, auth: tuple[str, str], timeout: int = 30) -> None:
+    def __init__(
+        self, base_url: str, auth: tuple[str, str], timeout: int = 30, retries: int = 3
+    ) -> None:
         """Initialize the Dynite client.
 
         Args:
@@ -24,11 +28,14 @@ class Dynite:
             auth (tuple[str, str]): The authentication credentials (username, password).
             timeout (int): The timeout for API requests in seconds.
                 Default is 30 seconds.
+            retries (int): The number of retries for failed requests.
+                Default is 3 retries.
         """
         self.base_url = self._validate_url(base_url)
         self.session = requests.Session()
         self.session.auth = auth
         self._timeout = self._validate_timeout(timeout)
+        self._mount_adapters(retries)
 
     def _validate_url(self, url: str) -> str:
         """Validate the base URL.
@@ -41,7 +48,7 @@ class Dynite:
         """
         if not url.startswith(("http://", "https://")):
             msg = f"Invalid URL: {url}"
-            logger.exception(msg)
+            logger.error(msg)
             raise InvalidURLError(msg)
         return url.rstrip("/")
 
@@ -62,3 +69,27 @@ class Dynite:
             logger.warning(msg)
             return 30
         return timeout
+
+    def _mount_adapters(self, retries: int) -> None:
+        """Mount HTTP adapters with retry strategy.
+
+        Args:
+            retries (int): The number of retries for failed requests.
+
+        Returns:
+            None
+        """
+        # Validate retries
+        if retries < 0:
+            msg = f"Invalid retries value: {retries}. Using default retries of 3."
+            logger.warning(msg)
+            retries = 3
+        # Set up retry strategy
+        retry_strategy = Retry(
+            total=retries,
+            status_forcelist=[429, 500, 502, 503, 504],
+            backoff_factor=1,
+        )
+        # Mount adapters with the retry strategy
+        self.session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
+        self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
