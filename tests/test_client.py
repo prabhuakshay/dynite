@@ -103,3 +103,41 @@ class TestClientInitialization:
         adapter = client_instance_invalid.session.get_adapter("http://")
         assert isinstance(adapter, HTTPAdapter)
         assert adapter.max_retries.total == 3
+
+
+class TestClientBuildURL:
+    """Tests for the _build_url method of the Client class."""
+
+    def test_client_build_url_method(self) -> None:
+        """Test the _build_url method of the Client class."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+
+        client_instance = Dynite(base_url=url, auth=auth)
+        endpoint = "entities"
+        params = {"filter": "name eq 'test'", "top": "10"}
+        built_url = client_instance._build_url(endpoint, params)
+        expected_url = (
+            "https://example.com/odata/entities?filter=name+eq+%27test%27&top=10"
+        )
+        assert built_url == expected_url
+
+    def test_client_build_url_no_params(self) -> None:
+        """Test the _build_url method without query parameters."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+        client_instance = Dynite(base_url=url, auth=auth)
+        endpoint = "entities"
+        built_url = client_instance._build_url(endpoint)
+        expected_url = "https://example.com/odata/entities"
+        assert built_url == expected_url
+
+    def test_client_build_url_leading_slash(self) -> None:
+        """Test the _build_url method with an endpoint that has a leading slash."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+        client_instance = Dynite(base_url=url, auth=auth)
+        endpoint = "/entities"
+        built_url = client_instance._build_url(endpoint)
+        expected_url = "https://example.com/odata/entities"
+        assert built_url == expected_url
