@@ -11,22 +11,39 @@ class TestClientInitialization:
 
     def test_client_initialization(self) -> None:
         """Test that the Client class initializes correctly with a valid base URL."""
+        # Check that the client instance is created without errors
         url = "https://example.com/odata/"
-        client_instance = Dynite(base_url=url)
+        client_instance = Dynite(base_url=url, auth=("user", "pass"))
         assert isinstance(client_instance, Dynite)
-        assert client_instance.base_url == url.rstrip("/")
 
-    def test_validate_url_invalid(self) -> None:
-        """Test that the Client class raises InvalidURLError for invalid base URLs."""
+    def test_client_attributes(self) -> None:
+        """
+        Test that the Client class has the expected attributes after initialization.
+
+        Expected attributes:
+            - base_url
+            - session
+        """
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+        client_instance = Dynite(base_url=url, auth=auth)
+        # Check Dynite.base_url exists
+        assert hasattr(client_instance, "base_url")
+        # Check Dynite.session exists
+        assert hasattr(client_instance, "session")
+
+    def test_client_url_attribute(self) -> None:
+        """Test that the base_url attribute is set correctly."""
+        auth = ("user", "pass")
+
+        url_with_slah = "https://example.com/odata/"
+        client_instance_with_slah = Dynite(base_url=url_with_slah, auth=auth)
+        assert client_instance_with_slah.base_url == "https://example.com/odata"
+
+        url_without_slah = "https://example.com/odata"
+        client_instance_no_slash = Dynite(base_url=url_without_slah, auth=auth)
+        assert client_instance_no_slash.base_url == "https://example.com/odata"
+
         invalid_url = "ftp://example.com/odata/"
         with pytest.raises(InvalidURLError):
-            _ = Dynite(base_url=invalid_url)
-
-    def test_validate_url_trailing_slash(self) -> None:
-        """Test that the Client class removes trailing slashes from the base URL."""
-        url_with_slash = "https://example.com/odata/"
-        url_without_slash = "https://example.com/odata"
-        client_instance = Dynite(base_url=url_with_slash)
-        assert client_instance.base_url == url_without_slash
-        client_instance_no_slash = Dynite(base_url=url_without_slash)
-        assert client_instance_no_slash.base_url == url_without_slash
+            _ = Dynite(base_url=invalid_url, auth=auth)
