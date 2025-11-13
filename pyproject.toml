@@ -1,0 +1,312 @@
+[project]
+name = "dynite"
+version = "0.1.0"
+description = "A python client for Business Central OData API."
+readme = "README.md"
+authors = [
+    { name = "prabhuakshay", email = "akshay.prabhu.mulki@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.32.5",
+]
+
+[project.scripts]
+dynite = "dynite:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.33.0",
+    "pre-commit>=4.4.0",
+    "pytest>=9.0.1",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.4",
+]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.13+
+target-version = "py313"
+
+[tool.ruff.lint]
+# Enable comprehensive rule set for strict but practical linting
+select = [
+    # pycodestyle
+    "E",
+    "W",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # flake8-comprehensions
+    "C4",
+    # pydocstyle (docstring conventions)
+    "D",
+    # flake8-pie
+    "PIE",
+    # flake8-bandit
+    "S",
+    # flake8-blind-except
+    "BLE",
+    # flake8-boolean-trap
+    "FBT",
+    # flake8-builtins
+    "A",
+    # flake8-commas
+    "COM",
+    # flake8-datetimez
+    "DTZ",
+    # flake8-debugger
+    "T10",
+    # flake8-errmsg
+    "EM",
+    # flake8-implicit-str-concat
+    "ISC",
+    # flake8-import-conventions
+    "ICN",
+    # flake8-logging-format
+    "G",
+    # flake8-no-pep420
+    "INP",
+    # flake8-print
+    "T20",
+    # flake8-pytest-style
+    "PT",
+    # flake8-quotes
+    "Q",
+    # flake8-raise
+    "RSE",
+    # flake8-return
+    "RET",
+    # flake8-self
+    "SLF",
+    # flake8-type-checking
+    "TCH",
+    # flake8-unused-arguments
+    "ARG",
+    # flake8-use-pathlib
+    "PTH",
+    # eradicate
+    "ERA",
+    # pygrep-hooks
+    "PGH",
+    # Pylint
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    # tryceratops
+    "TRY",
+    # flynt
+    "FLY",
+    # Perflint
+    "PERF",
+    # Refurb
+    "FURB",
+    # Ruff-specific rules
+    "RUF",
+]
+
+ignore = [
+    # Allow non-abstract empty methods in abstract base classes
+    "B027",
+    # Allow boolean positional values in function calls, like `dict.get(... True)`
+    "FBT003",
+    # Ignore checks for possible passwords
+    "S105", "S106", "S107",
+    # Ignore complexity (we'll set reasonable limits in pylint section)
+    "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+    # Allow print statements (useful for CLI tools)
+    "T201",
+    # Allow assert statements
+    "S101",
+    # Allow use of `subprocess` without shell=True check
+    "S603",
+    # Don't require docstrings for magic methods
+    "D105",
+    # Don't require docstrings for `__init__` methods
+    "D107",
+    # Allow imperative mood in docstrings (sometimes necessary)
+    "D401",
+    # Conflicts with formatter
+    "COM812",
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings.
+docstring-code-format = true
+
+# Set the line length limit for code snippets in docstrings.
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.isort]
+known-first-party = ["dynite"]
+force-single-line = false
+combine-as-imports = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252", "D"]
+# Allow missing docstrings in __init__.py files
+"**/__init__.py" = ["D104"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-branches = 12
+max-returns = 6
+max-statements = 50
+max-public-methods = 20
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--strict-markers -v --tb=short"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+[tool.basedpyright]
+# Enable strict type checking
+typeCheckingMode = "strict"
+
+# Python version
+pythonVersion = "3.13"
+
+# Include and exclude patterns
+include = ["src"]
+exclude = [
+    ".venv",
+    ".git",
+    "build",
+    "dist",
+    ".ruff_cache",
+    ".uv-cache",
+]
+
+# Strict settings
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+strictParameterNoneValue = true
+
+# Report settings
+reportMissingImports = "error"
+reportMissingTypeStubs = "warning"
+reportMissingTypeArgument = "warning"
+reportUnknownParameterType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownLambdaType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownMemberType = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportUnnecessaryContains = "warning"
+reportAssertAlwaysTrue = "warning"
+reportSelfClsParameterName = "error"
+reportConstantRedefinition = "error"
+reportDeprecated = "warning"
+reportDuplicateImport = "error"
+reportIncompleteStub = "warning"
+reportInconsistentConstructor = "error"
+reportInvalidStubStatement = "error"
+reportMatchNotExhaustive = "warning"
+reportMissingModuleSource = "warning"
+reportOverlappingOverload = "warning"
+reportPrivateUsage = "warning"
+reportTypeCommentUsage = "warning"
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportUnusedClass = "warning"
+reportUnusedFunction = "warning"
+reportUnusedImport = "error"
+reportUnusedVariable = "error"
+reportUntypedBaseClass = "warning"
+reportUntypedClassDecorator = "warning"
+reportUntypedFunctionDecorator = "warning"
+reportUntypedNamedTuple = "warning"
+reportCallInDefaultInitializer = "warning"
+reportImplicitStringConcatenation = "warning"
+reportInvalidTypeVarUse = "warning"
+reportPropertyTypeMismatch = "warning"
+reportUninitializedInstanceVariable = "warning"
+reportUnsupportedDunderAll = "warning"
+reportUnusedCallResult = "warning"
+reportUnusedCoroutine = "warning"
+reportUnusedExpression = "warning"
+reportWildcardImportFromLibrary = "warning"
+reportImplicitOverride = "warning"
+reportIncompatibleMethodOverride = "warning"
+reportIncompatibleVariableOverride = "warning"

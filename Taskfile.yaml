@@ -1,0 +1,63 @@
+version: '3'
+
+tasks:
+  format:
+    desc: "Format code with Ruff"
+    cmds:
+      - uv run ruff format src/
+    silent: true
+
+  lint:
+    desc: "Run Ruff linting checks"
+    cmds:
+      - uv run ruff check src/
+    silent: true
+
+  fix:
+    desc: "Run Ruff checks with auto-fix"
+    cmds:
+      - uv run ruff check src/ --fix --unsafe-fixes
+    silent: true
+
+  type-check:
+    desc: "Run type checking with basedpyright"
+    cmds:
+      - uv run basedpyright src/
+    silent: true
+
+  test:
+    desc: "Run tests with pytest"
+    cmds:
+      - uv run pytest
+    silent: true
+
+  test-cov:
+    desc: "Run tests with coverage report"
+    cmds:
+      - uv run pytest --cov=src/ --cov-report=term-missing
+    silent: true
+
+  clean:
+    desc: "Clean up cache and temporary files"
+    cmds:
+      - rm -rf .ruff_cache __pycache__ src/**/__pycache__ .pytest_cache
+    silent: true
+
+  pre-commit:
+    desc: "Run pre-commit hooks on all files"
+    cmds:
+      - uv run pre-commit run --all-files
+    silent: true
+
+  default:
+    desc: "Run all checks: format, fix, lint, type-check"
+    cmds:
+      - task: format
+      - task: fix
+      - task: lint
+      - task: type-check
+      - task: clean
+      - task: pre-commit
+      - task: test
+      - task: test-cov
+    silent: true
