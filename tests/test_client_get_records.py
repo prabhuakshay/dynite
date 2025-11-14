@@ -26,6 +26,13 @@ class TestClientGetRecords:
 
         responses.add(
             responses.GET,
+            f"{self.URL}/items/$count",
+            body="2",
+            status=200,
+        )
+
+        responses.add(
+            responses.GET,
             f"{self.URL}/items",
             json={
                 "value": [
@@ -41,11 +48,18 @@ class TestClientGetRecords:
         assert len(records) == 2
         assert records[0]["id"] == 1
         assert records[1]["name"] == "Item 2"
-        assert len(responses.calls) == 1
+        assert len(responses.calls) == 2
 
     @responses.activate
     def test_get_records_with_pagination(self) -> None:
         """Test retrieval of records with pagination."""
+
+        responses.add(
+            responses.GET,
+            f"{self.URL}/items/$count",
+            body="4",
+            status=200,
+        )
 
         responses.add(
             responses.GET,
@@ -77,7 +91,7 @@ class TestClientGetRecords:
         assert len(records) == 4
         assert records[2]["id"] == 3
         assert records[3]["name"] == "Item 4"
-        assert len(responses.calls) == 2
+        assert len(responses.calls) == 3
 
     @responses.activate
     def test_get_records_empty_response(self) -> None:
@@ -90,14 +104,28 @@ class TestClientGetRecords:
             status=200,
         )
 
+        responses.add(
+            responses.GET,
+            f"{self.URL}/items/$count",
+            body="0",
+            status=200,
+        )
+
         records = self.CLIENT.get_records("items")
 
         assert len(records) == 0
-        assert len(responses.calls) == 1
+        assert len(responses.calls) == 2
 
     @responses.activate
     def test_get_records_invalid_response(self) -> None:
         """Test retrieval of records with an invalid response."""
+
+        responses.add(
+            responses.GET,
+            f"{self.URL}/items/$count",
+            body="1",
+            status=200,
+        )
 
         responses.add(
             responses.GET,

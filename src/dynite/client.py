@@ -39,6 +39,7 @@ class Dynite:
         self.session.auth = auth
         self._timeout = self._validate_timeout(timeout)
         self._mount_adapters(retries)
+        logger.debug("Dynite client initialized.")
 
     def _validate_url(self, url: str) -> str:
         """Validate the base URL.
@@ -146,6 +147,8 @@ class Dynite:
             msg = f"Failed to get record count: {e}"
             logger.exception(msg)
             raise FailedRequestError(msg) from e
+        msg = f"GET request successful: {url}"
+        logger.debug(msg)
         return response
 
     def _get_record_count(
@@ -176,6 +179,8 @@ class Dynite:
             logger.error(msg)
             raise InvalidResponseError(msg)
 
+        msg = f"Total record count retrieved: {clean_text}"
+        logger.debug(msg)
         return int(clean_text)
 
     def _get_next_page_link(self, response: requests.Response) -> str | None:
@@ -206,6 +211,10 @@ class Dynite:
             InvalidResponseError: If the API response is invalid.
             FailedRequestError: If the API request fails.
         """
+        total_records = self._get_record_count(endpoint, params)
+        msg = f"Total records to retrieve: {total_records}"
+        logger.debug(msg)
+
         url = self._build_url(endpoint, params)
 
         records: list[dict[str, Any]] = []
@@ -224,5 +233,10 @@ class Dynite:
             if not next_link:
                 break
             url = next_link
+            msg = f"Loaded {len(records)} of {total_records} records so far."
+            logger.debug(msg)
+
+        msg = f"Total records retrieved: {len(records)}"
+        logger.debug(msg)
 
         return records
