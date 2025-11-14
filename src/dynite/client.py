@@ -144,7 +144,7 @@ class Dynite:
             response = self.session.get(url, timeout=self._timeout)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            msg = f"Failed to get record count: {e}"
+            msg = f"Failed to perform GET request: {e}"
             logger.exception(msg)
             raise FailedRequestError(msg) from e
         msg = f"GET request successful: {url}"
