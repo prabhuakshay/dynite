@@ -11,7 +11,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
-from .exceptions import InvalidURLError
+from .exceptions import FailedRequestError, InvalidResponseError, InvalidURLError
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +125,27 @@ class Dynite:
         logger.debug(msg)
         return url
 
+    def _get(self, url: str):
+        """Perform a GET request to the specified URL.
+
+        Args:
+            url (str): The URL to send the GET request to.
+
+        Returns:
+            requests.Response: The response object from the GET request.
+
+        Raises:
+            FailedRequestError: If the API request fails.
+        """
+        try:
+            response = self.session.get(url, timeout=self._timeout)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            msg = f"Failed to get record count: {e}"
+            logger.exception(msg)
+            raise FailedRequestError(msg) from e
+        return response
+
     def _get_record_count(
         self, endpoint: str, params: dict[str, str] | None = None
     ) -> int:
@@ -136,12 +157,21 @@ class Dynite:
 
         Returns:
             int: The total record count.
+
+        Raises:
+            InvalidResponseError: If the API response is invalid.
+            FailedRequestError: If the API request fails.
         """
         url = self._build_url(endpoint, params, get_count=True)
-        response = self.session.get(url, timeout=self._timeout)
-        response.raise_for_status()
+
+        response = self._get(url)
 
         # Decode bytes explicitly as UTF-8 and strip BOM if present
         clean_text = response.content.decode("utf-8-sig").strip()
+
+        if not clean_text.isdigit():
+            msg = f"Invalid response for record count: {clean_text}"
+            logger.error(msg)
+            raise InvalidResponseError(msg)
 
         return int(clean_text)
