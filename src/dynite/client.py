@@ -128,7 +128,7 @@ class Dynite:
         logger.debug(msg)
         return url
 
-    def _get(self, url: str):
+    def _get(self, url: str) -> requests.Response:
         """Perform a GET request to the specified URL.
 
         Args:
