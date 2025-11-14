@@ -1,3 +1,7 @@
+# Dynite - Python Client for Business Central OData API
+# This pyproject.toml file configures the build system, dependencies, and development tools
+# for the Dynite package. It uses modern Python packaging standards with PEP 621 compliance.
+
 [project]
 name = "dynite"
 version = "0.1.0"
@@ -6,28 +10,35 @@ readme = "README.md"
 authors = [
     { name = "prabhuakshay", email = "akshay.prabhu.mulki@gmail.com" }
 ]
+# Require Python 3.13+ for modern language features and performance improvements
 requires-python = ">=3.13"
+# Core runtime dependencies - kept minimal for better compatibility
 dependencies = [
     "requests>=2.32.5",
 ]
 
+# Build system configuration using Hatchling for modern, fast builds
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# Development dependencies grouped for different use cases
 [dependency-groups]
+# Development tools for linting, testing, and type checking
 dev = [
-    "basedpyright>=1.33.0",
-    "pre-commit>=4.4.0",
-    "pytest>=9.0.1",
-    "pytest-cov>=7.0.0",
-    "responses>=0.25.8",
-    "ruff>=0.14.4",
-    "types-requests>=2.32.4.20250913",
+    "basedpyright>=1.33.0",  # Type checker - Pyright fork with better performance
+    "pre-commit>=4.4.0",     # Git hooks for code quality
+    "pytest>=9.0.1",         # Testing framework
+    "pytest-cov>=7.0.0",     # Coverage reporting for tests
+    "responses>=0.25.8",     # Mock HTTP responses for testing
+    "ruff>=0.14.4",          # Fast Python linter and formatter
+    "types-requests>=2.32.4.20250913",  # Type stubs for requests library
 ]
 
+# Ruff configuration - Fast Python linter and formatter
+# Ruff combines multiple tools (flake8, isort, black, etc.) into a single fast tool
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
+# Exclude common directories that shouldn't be linted
 exclude = [
     ".bzr",
     ".direnv",
@@ -57,130 +68,133 @@ exclude = [
     "venv",
 ]
 
-# Same as Black.
+# Code style settings - matching Black formatter defaults
 line-length = 88
 indent-width = 4
-
-# Assume Python 3.13+
+# Target modern Python version for syntax transformations
 target-version = "py313"
 
+# Linting rules configuration
 [tool.ruff.lint]
 # Enable comprehensive rule set for strict but practical linting
+# Includes rules from multiple sources for thorough code quality checking
 select = [
-    # pycodestyle
+    # pycodestyle - PEP 8 style guide compliance
     "E",
     "W",
-    # Pyflakes
+    # Pyflakes - Logical error detection
     "F",
-    # pyupgrade
+    # pyupgrade - Python version upgrades
     "UP",
-    # flake8-bugbear
+    # flake8-bugbear - Additional bug and design problem detection
     "B",
-    # flake8-simplify
+    # flake8-simplify - Code simplification suggestions
     "SIM",
-    # isort
+    # isort - Import sorting
     "I",
-    # flake8-comprehensions
+    # flake8-comprehensions - List/dict comprehension improvements
     "C4",
-    # pydocstyle (docstring conventions)
+    # pydocstyle - Docstring conventions (Google style enforced)
     "D",
-    # flake8-pie
+    # flake8-pie - Unnecessary code detection
     "PIE",
-    # flake8-bandit
+    # flake8-bandit - Security vulnerability detection
     "S",
-    # flake8-blind-except
+    # flake8-blind-except - Bare except clause detection
     "BLE",
-    # flake8-boolean-trap
+    # flake8-boolean-trap - Boolean parameter issues
     "FBT",
-    # flake8-builtins
+    # flake8-builtins - Shadowing built-in names
     "A",
-    # flake8-commas
+    # flake8-commas - Comma placement
     "COM",
-    # flake8-datetimez
+    # flake8-datetimez - Naive datetime detection
     "DTZ",
-    # flake8-debugger
+    # flake8-debugger - Debugger statement detection
     "T10",
-    # flake8-errmsg
+    # flake8-errmsg - Error message improvements
     "EM",
-    # flake8-implicit-str-concat
+    # flake8-implicit-str-concat - String concatenation issues
     "ISC",
-    # flake8-import-conventions
+    # flake8-import-conventions - Import naming conventions
     "ICN",
-    # flake8-logging-format
+    # flake8-logging-format - Logging format issues
     "G",
-    # flake8-no-pep420
+    # flake8-no-pep420 - Namespace package issues
     "INP",
-    # flake8-print
+    # flake8-print - Print statement detection
     "T20",
-    # flake8-pytest-style
+    # flake8-pytest-style - Pytest best practices
     "PT",
-    # flake8-quotes
+    # flake8-quotes - Quote consistency
     "Q",
-    # flake8-raise
+    # flake8-raise - Exception raising improvements
     "RSE",
-    # flake8-return
+    # flake8-return - Return statement issues
     "RET",
-    # flake8-self
+    # flake8-self - Self parameter issues
     "SLF",
-    # flake8-type-checking
+    # flake8-type-checking - Type checking imports
     "TCH",
-    # flake8-unused-arguments
+    # flake8-unused-arguments - Unused parameter detection
     "ARG",
-    # flake8-use-pathlib
+    # flake8-use-pathlib - Path manipulation improvements
     "PTH",
-    # eradicate
+    # eradicate - Dead code detection
     "ERA",
-    # pygrep-hooks
+    # pygrep-hooks - Additional code quality checks
     "PGH",
-    # Pylint
+    # Pylint - Advanced code quality analysis
     "PLC",
     "PLE",
     "PLR",
     "PLW",
-    # tryceratops
+    # tryceratops - Exception handling improvements
     "TRY",
-    # flynt
+    # flynt - String formatting improvements
     "FLY",
-    # Perflint
+    # Perflint - Performance issue detection
     "PERF",
-    # Refurb
+    # Refurb - Code modernization
     "FURB",
-    # Ruff-specific rules
+    # Ruff-specific rules - Additional quality checks
     "RUF",
 ]
 
+# Rules that are too strict or conflict with project style
 ignore = [
     # Allow non-abstract empty methods in abstract base classes
     "B027",
     # Allow boolean positional values in function calls, like `dict.get(... True)`
     "FBT003",
-    # Ignore checks for possible passwords
+    # Ignore checks for possible passwords (false positives in test code)
     "S105", "S106", "S107",
-    # Ignore complexity (we'll set reasonable limits in pylint section)
+    # Ignore complexity limits (reasonable limits set in pylint section)
     "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
-    # Allow print statements (useful for CLI tools)
+    # Allow print statements (useful for CLI tools and debugging)
     "T201",
-    # Allow assert statements
+    # Allow assert statements (essential for testing)
     "S101",
-    # Allow use of `subprocess` without shell=True check
+    # Allow use of `subprocess` without shell=True check (context-dependent)
     "S603",
-    # Don't require docstrings for magic methods
+    # Don't require docstrings for magic methods (too verbose)
     "D105",
-    # Don't require docstrings for `__init__` methods
+    # Don't require docstrings for `__init__` methods (covered by class docstrings)
     "D107",
-    # Allow imperative mood in docstrings (sometimes necessary)
+    # Allow imperative mood in docstrings (sometimes necessary for clarity)
     "D401",
-    # Conflicts with formatter
+    # Conflicts with formatter (handled by ruff format)
     "COM812",
 ]
 
-# Allow fix for all enabled rules (when `--fix`) is provided.
+# Allow automatic fixing for all enabled rules when --fix is used
 fixable = ["ALL"]
 unfixable = []
 
-# Allow unused variables when underscore-prefixed.
+# Allow unused variables when underscore-prefixed (common Python convention)
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+# Code formatting configuration - compatible with Black
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
@@ -200,51 +214,64 @@ docstring-code-format = true
 # Set the line length limit for code snippets in docstrings.
 docstring-code-line-length = "dynamic"
 
+# Import sorting configuration
 [tool.ruff.lint.isort]
+# Treat dynite as a first-party package for import grouping
 known-first-party = ["dynite"]
+# Allow multi-line imports when beneficial
 force-single-line = false
+# Combine multiple imports from same module
 combine-as-imports = true
 
+# Import restrictions - prevent relative imports
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
+# File-specific rule overrides
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252", "D", "SLF001"]
 # Allow missing docstrings in __init__.py files
 "**/__init__.py" = ["D104"]
 
+# Docstring style enforcement - Google style for consistency
 [tool.ruff.lint.pydocstyle]
-# Use Google-style docstrings.
 convention = "google"
 
+# Pylint complexity limits - reasonable thresholds for maintainability
 [tool.ruff.lint.pylint]
-max-args = 5
-max-branches = 12
-max-returns = 6
-max-statements = 50
-max-public-methods = 20
+max-args = 5          # Maximum function arguments
+max-branches = 12     # Maximum branch points in functions
+max-returns = 6       # Maximum return statements
+max-statements = 50   # Maximum statements per function
+max-public-methods = 20  # Maximum public methods per class
 
+# Pytest configuration for running tests
 [tool.pytest.ini_options]
+# Directories containing test files
 testpaths = ["tests"]
+# Patterns for test file discovery
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+# Default command line options
 addopts = "--strict-markers -v --tb=short"
+# Custom markers for categorizing tests
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",
     "slow: Slow tests",
 ]
 
+# BasedPyright (Pyright fork) type checking configuration
 [tool.basedpyright]
-# Enable strict type checking
+# Enable strict type checking for maximum type safety
 typeCheckingMode = "strict"
 
-# Python version
+# Python version for type checking
 pythonVersion = "3.13"
 
-# Include and exclude patterns
+# Include and exclude patterns for type checking
 include = ["src"]
 exclude = [
     ".venv",
@@ -255,13 +282,13 @@ exclude = [
     ".uv-cache",
 ]
 
-# Strict settings
+# Strict type inference settings
 strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
 strictParameterNoneValue = true
 
-# Report settings
+# Error and warning reporting configuration
 reportMissingImports = "error"
 reportMissingTypeStubs = "warning"
 reportMissingTypeArgument = "warning"
