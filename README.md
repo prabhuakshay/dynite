@@ -639,7 +639,7 @@ print(f"Total value of recent orders: ${total_value:.2f}")
 **A:** Use the `$top` parameter to limit results, and process data in batches to manage memory usage.
 
 ## Version History
-Please see [CHANGELOG](CHANGELOG.MD) for version history
+Please see [CHANGELOG](CHANGELOG.md) for version history
 
 ## Support
 
