@@ -95,12 +95,19 @@ class Dynite:
         self.session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
         self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
 
-    def _build_url(self, endpoint: str, params: dict[str, str] | None = None) -> str:
+    def _build_url(
+        self,
+        endpoint: str,
+        params: dict[str, str] | None = None,
+        *,
+        get_count: bool = False,
+    ) -> str:
         """Build the full URL for an API endpoint.
 
         Args:
             endpoint (str): The API endpoint.
             params (dict[str, str] | None): Optional query parameters.
+            get_count (bool): Flag to indicate if the URL is for getting record count.
 
         Returns:
             str: The full URL for the API endpoint.
@@ -108,8 +115,33 @@ class Dynite:
         endpoint = endpoint.lstrip("/")
         url = f"{self.base_url}/{endpoint}"
 
+        if get_count:
+            url = f"{url}/$count"
+
         if params:
             query_string = urlencode(params)
             url = f"{url}?{query_string}"
-
+        msg = f"Built URL: {url}"
+        logger.debug(msg)
         return url
+
+    def _get_record_count(
+        self, endpoint: str, params: dict[str, str] | None = None
+    ) -> int:
+        """Get total record count from a given endpoint.
+
+        Args:
+            endpoint (str): The API endpoint.
+            params (dict[str, str] | None): Optional query parameters.
+
+        Returns:
+            int: The total record count.
+        """
+        url = self._build_url(endpoint, params, get_count=True)
+        response = self.session.get(url, timeout=self._timeout)
+        response.raise_for_status()
+
+        # Decode bytes explicitly as UTF-8 and strip BOM if present
+        clean_text = response.content.decode("utf-8-sig").strip()
+
+        return int(clean_text)

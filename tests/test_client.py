@@ -1,5 +1,7 @@
 """Tests for the Client class in dynite.client module."""
 
+from unittest.mock import patch
+
 import pytest
 from requests.adapters import HTTPAdapter
 
@@ -141,3 +143,37 @@ class TestClientBuildURL:
         built_url = client_instance._build_url(endpoint)
         expected_url = "https://example.com/odata/entities"
         assert built_url == expected_url
+
+    def test_client_build_url_get_count(self) -> None:
+        """Test the _build_url method with get_count flag set to True."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+        client_instance = Dynite(base_url=url, auth=auth)
+        endpoint = "entities"
+        built_url = client_instance._build_url(endpoint, get_count=True)
+        expected_url = "https://example.com/odata/entities/$count"
+        assert built_url == expected_url
+
+
+class TestClientGetRecordCount:
+    """Tests for the _get_record_count method of the Client class."""
+
+    @patch("dynite.client.requests.Session.get")
+    def test_client_get_record_count_method(self, mock_get: patch) -> None:
+        """Test the _get_record_count method of the Client class."""
+        url = "https://example.com/odata/"
+        auth = ("user", "pass")
+        client_instance = Dynite(base_url=url, auth=auth)
+
+        # Mock the session.get response
+        mock_response = mock_get.return_value
+        mock_response.content = b"42"
+        mock_response.raise_for_status.return_value = None
+
+        endpoint = "entities"
+        record_count = client_instance._get_record_count(endpoint)
+
+        assert record_count == 42
+        mock_get.assert_called_once_with(
+            "https://example.com/odata/entities/$count", timeout=30
+        )
