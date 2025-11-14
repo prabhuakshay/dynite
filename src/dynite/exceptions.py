@@ -11,3 +11,11 @@ class DyniteError(Exception):
 
 class InvalidURLError(DyniteError):
     """Exception raised for invalid Base URLs."""
+
+
+class InvalidResponseError(DyniteError):
+    """Exception raised for invalid responses from the server."""
+
+
+class FailedRequestError(DyniteError):
+    """Exception raised for failed API requests."""
