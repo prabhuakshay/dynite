@@ -7,7 +7,7 @@ the Business Central OData API.
 import logging
 from json import JSONDecodeError
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -50,7 +50,13 @@ class Dynite:
         Returns:
             str: The validated base URL.
         """
+        url = url.strip()
         if not url.startswith(("http://", "https://")):
+            msg = f"Invalid URL: {url}"
+            logger.error(msg)
+            raise InvalidURLError(msg)
+        parsed = urlparse(url)
+        if not parsed.netloc:
             msg = f"Invalid URL: {url}"
             logger.error(msg)
             raise InvalidURLError(msg)
