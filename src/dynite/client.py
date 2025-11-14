@@ -5,6 +5,8 @@ the Business Central OData API.
 """
 
 import logging
+from json import JSONDecodeError
+from typing import Any
 from urllib.parse import urlencode
 
 import requests
@@ -187,3 +189,40 @@ class Dynite:
         """
         json_response = response.json()
         return json_response.get("@odata.nextLink", None)
+
+    def get_records(
+        self, endpoint: str, params: dict[str, str] | None = None
+    ) -> list[dict[str, Any]]:
+        """Get records from a given endpoint.
+
+        Args:
+            endpoint (str): The API endpoint.
+            params (dict[str, str] | None): Optional query parameters.
+
+        Returns:
+            list[dict[str, Any]]: A list of records retrieved from the endpoint.
+
+        Raises:
+            InvalidResponseError: If the API response is invalid.
+            FailedRequestError: If the API request fails.
+        """
+        url = self._build_url(endpoint, params)
+
+        records: list[dict[str, Any]] = []
+
+        while True:
+            response = self._get(url)
+            try:
+                json_response = response.json()
+            except JSONDecodeError as e:
+                msg = f"Invalid JSON response: {e}"
+                logger.exception(msg)
+                raise InvalidResponseError(msg) from e
+            records.extend(json_response.get("value", []))
+
+            next_link = self._get_next_page_link(response)
+            if not next_link:
+                break
+            url = next_link
+
+        return records
