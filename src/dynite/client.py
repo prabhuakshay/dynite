@@ -175,3 +175,15 @@ class Dynite:
             raise InvalidResponseError(msg)
 
         return int(clean_text)
+
+    def _get_next_page_link(self, response: requests.Response) -> str | None:
+        """Extract the next page link from the response headers.
+
+        Args:
+            response (requests.Response): The response object from an API request.
+
+        Returns:
+            str | None: The next page link if available, otherwise None.
+        """
+        json_response = response.json()
+        return json_response.get("@odata.nextLink", None)
