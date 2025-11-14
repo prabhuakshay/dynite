@@ -38,6 +38,13 @@ class TestClientInitialization:
         with pytest.raises(InvalidURLError):
             _ = Dynite(base_url=not_a_url, auth=auth)
 
+    def test_client_invalid_base_url_no_netloc(self) -> None:
+        """Test that providing a base_url with scheme but no netloc."""
+        auth: tuple[str, str] = ("user", "pass")
+        no_netloc_url = "https://"
+        with pytest.raises(InvalidURLError):
+            _ = Dynite(base_url=no_netloc_url, auth=auth)
+
     def test_client_timeout_default(self) -> None:
         """Test that the timeout attribute is set to the default value."""
         url = "https://example.com/odata/"
