@@ -1,8 +1,6 @@
-import pytest
 import responses
 
 from dynite import Dynite
-from dynite.exceptions import InvalidResponseError
 
 
 class TestClientNextPageLink:
@@ -23,7 +21,7 @@ class TestClientNextPageLink:
 
         client = Dynite(base_url="https://example.com/odata/", auth=("user", "pass"))
         response = client._get(url)
-        extracted_link = client._get_next_page_link(response)
+        extracted_link = client._get_next_page_link(response.json())
 
         assert extracted_link == next_link
 
@@ -41,24 +39,6 @@ class TestClientNextPageLink:
 
         client = Dynite(base_url="https://example.com/odata/", auth=("user", "pass"))
         response = client._get(url)
-        extracted_link = client._get_next_page_link(response)
+        extracted_link = client._get_next_page_link(response.json())
 
         assert extracted_link is None
-
-    @responses.activate
-    def test_client_next_page_link_invalid_json(self) -> None:
-        """Test the _get_next_page_link method with invalid JSON response."""
-        url = "https://example.com/odata/entities"
-
-        responses.add(
-            method=responses.GET,
-            url=url,
-            body="Invalid JSON",
-            status=200,
-        )
-
-        client = Dynite(base_url="https://example.com/odata/", auth=("user", "pass"))
-        response = client._get(url)
-
-        with pytest.raises(InvalidResponseError):
-            client._get_next_page_link(response)
