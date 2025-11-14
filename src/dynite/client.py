@@ -98,8 +98,11 @@ class Dynite:
         """
         # Validate retries
         if retries < 0:
-            msg = f"Invalid retries value: {retries}. Using default retries of 3."
-            logger.warning(msg)
+            logger.warning(
+                "Invalid retries value: %s. Using default retries of %s.",
+                retries,
+                self.DEFAULT_RETRIES,
+            )
             retries = self.DEFAULT_RETRIES
         # Set up retry strategy
         retry_strategy = Retry(
