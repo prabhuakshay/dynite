@@ -189,7 +189,7 @@ class Dynite:
         logger.debug(msg)
         return int(clean_text)
 
-    def _get_next_page_link(self, response: requests.Response) -> str | None:
+    def _get_next_page_link(self, response: dict[str, Any]) -> str | None:
         """Extract the next page link from the response body.
 
         Args:
@@ -198,13 +198,8 @@ class Dynite:
         Returns:
             str | None: The next page link if available, otherwise None.
         """
-        try:
-            json_response = response.json()
-        except JSONDecodeError as e:
-            msg = f"Invalid JSON response: {e}"
-            logger.exception(msg)
-            raise InvalidResponseError(msg) from e
-        return json_response.get("@odata.nextLink", None)
+        next_link = response.get("@odata.nextLink")
+        return str(next_link) if next_link else None
 
     def get_records(
         self, endpoint: str, params: dict[str, str] | None = None
@@ -240,7 +235,7 @@ class Dynite:
                 raise InvalidResponseError(msg) from e
             records.extend(json_response.get("value", []))
 
-            next_link = self._get_next_page_link(response)
+            next_link = self._get_next_page_link(json_response)
             if not next_link:
                 break
             url = next_link
