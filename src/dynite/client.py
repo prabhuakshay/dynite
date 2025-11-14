@@ -21,8 +21,15 @@ logger = logging.getLogger(__name__)
 class Dynite:
     """Dynite client for Business Central OData API."""
 
+    DEFAULT_TIMEOUT = 30
+    DEFAULT_RETRIES = 3
+
     def __init__(
-        self, base_url: str, auth: tuple[str, str], timeout: int = 30, retries: int = 3
+        self,
+        base_url: str,
+        auth: tuple[str, str],
+        timeout: int = DEFAULT_TIMEOUT,
+        retries: int = DEFAULT_RETRIES,
     ) -> None:
         """Initialize the Dynite client.
 
@@ -77,7 +84,7 @@ class Dynite:
                 f"Using default timeout of 30 seconds."
             )
             logger.warning(msg)
-            return 30
+            return self.DEFAULT_TIMEOUT
         return timeout
 
     def _mount_adapters(self, retries: int) -> None:
@@ -93,11 +100,12 @@ class Dynite:
         if retries < 0:
             msg = f"Invalid retries value: {retries}. Using default retries of 3."
             logger.warning(msg)
-            retries = 3
+            retries = self.DEFAULT_RETRIES
         # Set up retry strategy
         retry_strategy = Retry(
             total=retries,
             status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"],
             backoff_factor=1,
         )
         # Mount adapters with the retry strategy
