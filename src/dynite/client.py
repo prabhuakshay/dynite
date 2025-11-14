@@ -192,7 +192,12 @@ class Dynite:
         Returns:
             str | None: The next page link if available, otherwise None.
         """
-        json_response = response.json()
+        try:
+            json_response = response.json()
+        except JSONDecodeError as e:
+            msg = f"Invalid JSON response: {e}"
+            logger.exception(msg)
+            raise InvalidResponseError(msg) from e
         return json_response.get("@odata.nextLink", None)
 
     def get_records(
