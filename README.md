@@ -1,6 +1,6 @@
 # Dynite
 
-[![PyPI version](https://img.shields.io/pypi/pyversions/dynite)](https://pypi.org/project/dynite/)
+[![PyPI version](https://img.shields.io/pypi/v/dynite)](https://pypi.org/project/dynite/)
 [![Python versions](https://img.shields.io/badge/python-3.13-blue)](https://pypi.org/project/dynite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
