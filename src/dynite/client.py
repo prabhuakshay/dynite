@@ -184,7 +184,7 @@ class Dynite:
         return int(clean_text)
 
     def _get_next_page_link(self, response: requests.Response) -> str | None:
-        """Extract the next page link from the response headers.
+        """Extract the next page link from the response body.
 
         Args:
             response (requests.Response): The response object from an API request.
