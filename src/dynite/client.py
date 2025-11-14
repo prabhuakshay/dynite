@@ -79,11 +79,11 @@ class Dynite:
             int: The validated timeout value.
         """
         if timeout <= 0:
-            msg = (
-                f"Invalid timeout value: {timeout}. "
-                f"Using default timeout of 30 seconds."
+            logger.warning(
+                "Invalid timeout value: %s. Using default timeout of %s seconds.",
+                timeout,
+                self.DEFAULT_TIMEOUT,
             )
-            logger.warning(msg)
             return self.DEFAULT_TIMEOUT
         return timeout
 
@@ -138,8 +138,7 @@ class Dynite:
         if params:
             query_string = urlencode(params)
             url = f"{url}?{query_string}"
-        msg = f"Built URL: {url}"
-        logger.debug(msg)
+        logger.debug("Built URL: %s", url)
         return url
 
     def _get(self, url: str) -> requests.Response:
@@ -161,8 +160,7 @@ class Dynite:
             msg = f"Failed to perform GET request: {e}"
             logger.exception(msg)
             raise FailedRequestError(msg) from e
-        msg = f"GET request successful: {url}"
-        logger.debug(msg)
+        logger.debug("GET request successful: %s", url)
         return response
 
     def _get_record_count(
@@ -193,8 +191,7 @@ class Dynite:
             logger.error(msg)
             raise InvalidResponseError(msg)
 
-        msg = f"Total record count retrieved: {clean_text}"
-        logger.debug(msg)
+        logger.debug("Total record count retrieved: %s", clean_text)
         return int(clean_text)
 
     def _get_next_page_link(self, response: dict[str, Any]) -> str | None:
@@ -226,8 +223,7 @@ class Dynite:
             FailedRequestError: If the API request fails.
         """
         total_records = self._get_record_count(endpoint, params)
-        msg = f"Total records to retrieve: {total_records}"
-        logger.debug(msg)
+        logger.debug("Total records to retrieve: %s", total_records)
 
         url = self._build_url(endpoint, params)
 
@@ -247,10 +243,8 @@ class Dynite:
             if not next_link:
                 break
             url = next_link
-            msg = f"Loaded {len(records)} of {total_records} records so far."
-            logger.debug(msg)
+            logger.debug("Loaded %d of %d records so far.", len(records), total_records)
 
-        msg = f"Total records retrieved: {len(records)}"
-        logger.debug(msg)
+        logger.debug("Total records retrieved: %d", len(records))
 
         return records
