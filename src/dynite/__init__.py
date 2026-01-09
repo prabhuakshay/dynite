@@ -28,9 +28,11 @@ Version: 0.1.0
 """
 
 import logging
+from warnings import warn
 
 from .client import Dynite
 
+# Warn users to use a different library
 __version__ = "0.1.0"
 
 # Configure default logging for the package
@@ -42,3 +44,6 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 # Expose the main client class in the package's public API
 # This allows users to import directly: from dynite import Dynite
 __all__ = ["Dynite"]
+
+
+warn("dynite is deprecated, use odyn instead", DeprecationWarning, stacklevel=2)
